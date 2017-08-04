@@ -1,48 +1,59 @@
+import tempfile
+import os
+
+from rest_framework import viewsets, status
 from rest_framework.views import APIView
 from rest_framework.parsers import FileUploadParser
 from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
 
-from converter.utils import svg_converter
-from converter.utils import CONVERTED_FILES_PREFIX
-
-from rest_framework.permissions import AllowAny
-
-import tempfile
-import os
 from django.http import HttpResponse
 
+from converter.models import SVGFile
+from converter.serializers import SVGFileSerializer
 
-class SVGUploadView(APIView):
-    parser_classes = (FileUploadParser,)
-    permission_classes = (AllowAny,)
+from converter.utils import get_all_files, get_file_content, get_file_obj_for_serializer
+from converter.utils import CONVERTED_FILES_PREFIX
 
-    def put(self, request, filename, format = None):
-        file_obj = request.data['file']
-
-        (fd, temp_path) = tempfile.mkstemp(prefix=CONVERTED_FILES_PREFIX)
-        with os.fdopen(fd, 'wb') as f:
-            f.write(file_obj.read())
-            f.close()
-            tempfilename = os.path.basename(temp_path)
-
-        datajson = { 'identifier': tempfilename}
-
-        return Response(status=200,data=datajson)
-
-
-def get_convert_file(request, filenameidentifier, format):
-    filepath = os.path.join(tempfile.gettempdir(), filenameidentifier)
-    datajson = {'success': False,}
-    if os.path.exists(filepath):
-        with open(filepath,'rb') as f:
-            data = ''
-            destformat = 'image/png'
-
-            if format == 'pdf':
-                destformat = 'application/pdf'
-
-            outstring = svg_converter(f.read(), content_type=destformat)
-            return HttpResponse(outstring, destformat)
-
+def get_convert_file(request, pk, format):
+    (mimetype,outstring) = get_file_content(pk, format)
+    if outstring != '':
+            return HttpResponse(outstring, mimetype)
     return HttpResponse(status=500)
 
+class SVGFileViewSet(viewsets.ViewSet):
+    serializer_class = SVGFileSerializer
+    permission_classes = (IsAuthenticated,)
+
+    def list(self, request):
+        serializer = SVGFileSerializer( instance = get_all_files(), many = True)
+        return Response (serializer.data)
+
+    def retrieve(self, request, pk = None):
+        filepath =  os.path.join(tempfile.gettempdir(),pk)
+        filesize =  fsize = os.path.getsize(filepath)
+        serializer = SVGFileSerializer(
+            instance = SVGFile(id = pk, file = get_file_obj_for_serializer(filepath, filesize)) ,
+            many = False)
+        return Response (serializer.data)
+
+
+    def create(self, request):
+        serializer = SVGFileSerializer( data = request.data )
+        if serializer.is_valid():
+            (fd, temp_path) = tempfile.mkstemp(prefix=CONVERTED_FILES_PREFIX)
+            with os.fdopen(fd, 'wb') as f:
+                f.write(serializer.validated_data['file'].read())
+                f.close()
+                tempfilename = os.path.basename(temp_path)
+                return Response({'status': True, 'identifier': tempfilename})
+
+        return Response(serializer.errors,
+                            status=status.HTTP_400_BAD_REQUEST)
+
+    def destroy(self, request, pk=None):
+        if pk:
+            filepath = os.path.join(tempfile.gettempdir(), pk)
+            if os.path.exists(filepath):
+                os.remove(filepath)
+        return Response(status=status.HTTP_200_OK)

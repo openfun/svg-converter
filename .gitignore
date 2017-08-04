@@ -77,3 +77,5 @@ build
 autodeploy.properties
 .ws_migrations_complete
 dist
+
+db.sqlite3

@@ -14,11 +14,17 @@ Including another URLconf
 """
 from django.conf.urls import include, url
 from django.contrib import admin
+from rest_framework import routers
+
 import converter.views
 
+router = routers.DefaultRouter()
+router.register(r'svgfiles', converter.views.SVGFileViewSet, base_name='svgfile')
+
+
 urlpatterns = [
+    url(r'^', include(router.urls)),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
-    url(r'^upload/(?P<filename>[^/]+)$', converter.views.SVGUploadView.as_view()),
     url(r'^converter/(?P<format>[^/]+)/(?P<filenameidentifier>[^/]+)$', converter.views.get_convert_file)
 ]

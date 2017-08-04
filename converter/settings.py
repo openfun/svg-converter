@@ -112,3 +112,6 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly',
     ]
 }
+
+
+SVG_STORAGE_LOCATION = '/media/svg'
