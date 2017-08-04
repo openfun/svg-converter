@@ -1,0 +1,6 @@
+markdown
+django==1.8.15
+django-filter
+djangorestframework
+cairosvg
+django-cron
