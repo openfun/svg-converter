@@ -15,7 +15,15 @@ import os
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+
+# SECURITY WARNING: keep the secret key used in production secret!
+SECRET_KEY = os.getenv('DJANGO_SECRET_KEY',
+                       '_wlt$wxowsz36a5u)!cjnazr%+n3eor1kje8p_rm9g*u$71@w!')
+
+
 ALLOWED_HOSTS = []
+
+DEBUG = True
 
 
 # Application definition
