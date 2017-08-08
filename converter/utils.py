@@ -1,13 +1,10 @@
 import hashlib
 
-import cairosvg
 from tempfile import NamedTemporaryFile
 import subprocess
 import os
 import glob
 import tempfile
-from django.conf import settings
-
 from converter.models import SVGFile
 
 
