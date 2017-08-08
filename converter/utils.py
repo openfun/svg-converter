@@ -20,8 +20,8 @@ def svg_converter(svgstringin, content_type="image/png", conversiontool=CONVERSI
     convertedvalstring = ''
     if conversiontool == CONVERSION_TOOL_INKSCAPE:
         convertedvalstring = __convert_via_inkscape(svgstringin, content_type)
-    else:
-        convertedvalstring = cairosvg.surface.PDFSurface.convert(svgstringin)
+    #else:
+        #convertedvalstring = cairosvg.surface.PDFSurface.convert(svgstringin)
     return convertedvalstring
 
 def __convert_via_inkscape(stringin, content_type="image/png"):
