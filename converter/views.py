@@ -13,12 +13,7 @@ from converter.serializers import SVGFileSerializer
 
 from converter.utils import get_all_files, get_file_content, get_file_obj_for_serializer
 from converter.utils import CONVERTED_FILES_PREFIX
-
-def get_convert_file(request, format, pk):
-    (mimetype,outstring) = get_file_content(pk, format)
-    if outstring != '':
-            return HttpResponse(outstring, mimetype)
-    return HttpResponse(status=500)
+from converter.utils import get_convert_file
 
 class SVGFileViewSet(viewsets.ViewSet):
     serializer_class = SVGFileSerializer
@@ -30,6 +25,9 @@ class SVGFileViewSet(viewsets.ViewSet):
         return Response (serializer.data)
 
     def retrieve(self, request, pk = None):
+        if 'transform' in request.query_params:
+            return get_convert_file(request.query_params['transform'], pk)
+
         filepath =  os.path.join(tempfile.gettempdir(),pk)
         filesize =  fsize = os.path.getsize(filepath)
         serializer = SVGFileSerializer(

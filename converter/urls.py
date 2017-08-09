@@ -26,5 +26,4 @@ urlpatterns = [
     url(r'^', include(router.urls)),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
-    url(r'^converter/(?P<format>[^/]+)/(?P<pk>[^/]+)$', converter.views.get_convert_file)
 ]

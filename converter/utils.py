@@ -7,10 +7,19 @@ import glob
 import tempfile
 from converter.models import SVGFile
 
+from django.http import HttpResponse
+
 
 CONVERSION_TOOL_INKSCAPE = 1
 CONVERSION_TOOL_CAIROSVG = 2
 CONVERTED_FILES_PREFIX = 'converter'
+
+def get_convert_file(format, pk):
+    (mimetype,outstring) = get_file_content(pk, format)
+    if outstring != '':
+            return HttpResponse(outstring, mimetype)
+    return HttpResponse(status=500)
+
 
 def svg_converter(svgstringin, content_type="image/png", conversiontool=CONVERSION_TOOL_INKSCAPE):
     """
