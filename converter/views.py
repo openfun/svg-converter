@@ -2,7 +2,7 @@ import tempfile
 import os
 
 from rest_framework import viewsets, status
-from rest_framework.authentication import SessionAuthentication, BasicAuthentication
+from rest_framework.authentication import SessionAuthentication, TokenAuthentication
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 
@@ -14,7 +14,7 @@ from converter.serializers import SVGFileSerializer
 from converter.utils import get_all_files, get_file_content, get_file_obj_for_serializer
 from converter.utils import CONVERTED_FILES_PREFIX
 
-def get_convert_file(request, pk, format):
+def get_convert_file(request, format, pk):
     (mimetype,outstring) = get_file_content(pk, format)
     if outstring != '':
             return HttpResponse(outstring, mimetype)
@@ -22,7 +22,7 @@ def get_convert_file(request, pk, format):
 
 class SVGFileViewSet(viewsets.ViewSet):
     serializer_class = SVGFileSerializer
-    authentication_classes = (SessionAuthentication,BasicAuthentication)
+    authentication_classes = (SessionAuthentication,TokenAuthentication)
     permission_classes = (IsAuthenticated,)
 
     def list(self, request):

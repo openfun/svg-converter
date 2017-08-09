@@ -6,11 +6,12 @@ This is for now a very simple server that will accept an SVG file (POST) as an i
 
 Example of use via curl:
 
-curl -X POST -F "file=@model.svg" -F "csrfmiddlewaretoken=N92mmDrmtT0GZ747Y5pHejFJLwONcH5s"  http://192.168.2.100:8000/svgfiles/?format=json
+>  curl -X POST -F 'file=@_model.svg' -H 'Authorization: Token 48de857eedb88797209521a1695b0dc8d614afd4' http://127.0.0.1:8989/svgfiles/
 
-<That will return a file identifier>
 
-curl -X GET  http://192.168.2.100:8000/converter/png/converter7nu1vbyr > test.png
+It will return a file identifier which will be then used to get a specific version of the file (pdf or png): 
+
+> curl -X GET  http://127.0.0.1:8989/converter/png/converterc7nu1vbyr > test.png
 
 
 Requirements
