@@ -120,5 +120,5 @@ STATIC_ROOT = os.getenv('STATIC_ROOT',
                         os.path.join(BASE_DIR, 'collected_static'))
 
 CRON_CLASSES = [
-    "converter.purgefiles",
+    "converter.PurgeFiles",
 ]

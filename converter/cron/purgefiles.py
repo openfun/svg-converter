@@ -5,7 +5,7 @@ import tempfile
 import os, glob
 
 
-class MyCronJob(CronJobBase):
+class PurgeFiles(CronJobBase):
     RUN_EVERY_MINS = 24*60 # every day
 
     schedule = Schedule(run_every_mins=RUN_EVERY_MINS)
