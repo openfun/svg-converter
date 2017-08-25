@@ -7,5 +7,4 @@ from .base import *
 DEBUG = True
 
 SECRET_KEY = '_wlt$wxowsz36a5u)!cjnazr%+n3eor1kje8p_rm9g*u$71@w!'
-
-
+AUTH_TOKEN = 'changeme'

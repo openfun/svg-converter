@@ -2,10 +2,11 @@ import tempfile
 import os
 
 from rest_framework import viewsets, status
-from rest_framework.authentication import SessionAuthentication, TokenAuthentication
-from rest_framework.response import Response
+from rest_framework import authentication, exceptions
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
 
+from django.conf import settings
 from django.http import HttpResponse
 
 from converter.models import SVGFile
@@ -15,10 +16,31 @@ from converter.utils import get_all_files, get_file_content, get_file_obj_for_se
 from converter.utils import CONVERTED_FILES_PREFIX
 from converter.utils import get_convert_file
 
+
+class TokenAuth(object):
+    keyword = 'Token'
+
+    def authenticate(self, request):
+        auth = authentication.get_authorization_header(request).split()
+
+        if not auth or auth[0].lower() != self.keyword.lower().encode():
+            raise exceptions.AuthenticationFailed('Invalid token')
+
+        token = auth[1].decode()
+        if token != settings.AUTH_TOKEN:
+            raise exceptions.AuthenticationFailed('Invalid token')
+
+        return (None, token)
+
+    def authenticate_header(self, request):
+        return self.keyword
+
+
 class SVGFileViewSet(viewsets.ViewSet):
     serializer_class = SVGFileSerializer
-    authentication_classes = (SessionAuthentication,TokenAuthentication)
-    permission_classes = (IsAuthenticated,)
+    authentication_classes = (TokenAuth,)
+    permission_classes = tuple()
+
 
     def list(self, request):
         serializer = SVGFileSerializer( instance = get_all_files(), many = True)
